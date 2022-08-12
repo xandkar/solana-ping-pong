@@ -1,0 +1,43 @@
+solana hello world
+==================
+
+An actually-minimal Solana program and client in Rust.
+
+I'm learning Solana and all the examples, including the official hello-world,
+are too complex to get the essential idea across.
+
+I wanted a bare bones working example, entirely in Rust (not a JS/TS client),
+but couldn't find one, so made this.
+
+
+build
+-----
+
+    ./client-build.sh
+    ./program-build.sh
+
+run
+---
+
+1. Open 3 terminals: A, B and C
+2. In terminal A, start the test validator:
+
+    solana-test-validator
+
+3. In terminal B, ensure you have ample sol to spare:
+
+    solana airdrop 10 --url http://127.0.0.1:8899
+
+4. In terminal B, watch the test validator logs:
+
+    solana logs --url http://127.0.0.1:8899
+
+4. In terminal C, deploy the program:
+
+    ./program-deploy.sh
+
+5. In terminal C:
+
+    ./client-run.sh
+
+6. Behold the output in terminals B and C!
