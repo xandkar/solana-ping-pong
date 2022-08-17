@@ -1,43 +1,53 @@
-solana hello world
-==================
+solana ping pong
+================
 
-An actually-minimal Solana program and client in Rust.
+In hello-world[1], the program simply logs that it has received something from
+the client, but does nothing else, for any instruction data whatsoever.
 
-I'm learning Solana and all the examples, including the official hello-world,
-are too complex to get the essential idea across.
+Here is a slight escalation in complexity, where the program reads the
+specifics of the client request and writes a response into the client-provided
+buffer account, which the client proceeds to read.
 
-I wanted a bare bones working example, entirely in Rust (not a JS/TS client),
-but couldn't find one, so made this.
+Client sends a ping and the program responds with a pong, ad infinitum.
 
+If all goes well, you should see output like this:
+
+    airdrop requesting.
+    airdrop confirming .....
+    airdrop done
+    buffer account creating
+    buffer account done
+    Ping(0) > < Pong(1)
+    Ping(2) > < Pong(3)
+    Ping(4) > < Pong(5)
+    Ping(6) > < Pong(7)
+    Ping(8) > < Pong(9)
+    Ping(10) > < Pong(11)
+    Ping(12) > < Pong(13)
+    Ping(14) > < Pong(15)
+    Ping(16) > < Pong(17)
+    Ping(18) > < Pong(19)
+    ...
+
+[1]: https://github.com/xandkar/solana-hello-world/
 
 build
 -----
 
-    ./client-build.sh
-    ./program-build.sh
+    make build
 
 run
 ---
 
-1. Open 3 terminals: A, B and C
-2. In terminal A, start the test validator:
+### local
 
-    solana-test-validator
+    $ solana-test-validator&
+    $ make all
 
-3. In terminal B, ensure you have ample sol to spare:
+### devnet
 
-    solana airdrop 10 --url http://127.0.0.1:8899
+    $ CLUSTER=dev make all
 
-4. In terminal B, watch the test validator logs:
+### testnet
 
-    solana logs --url http://127.0.0.1:8899
-
-4. In terminal C, deploy the program:
-
-    ./program-deploy.sh
-
-5. In terminal C:
-
-    ./client-run.sh
-
-6. Behold the output in terminals B and C!
+    $ CLUSTER=test make all
