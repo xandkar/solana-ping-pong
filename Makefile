@@ -40,6 +40,9 @@ build:
 
 .PHONY: deploy
 deploy: airdrop # airdrop just to make sure we have enough to deploy
+	# deploy sometimes fails on testnet with:
+	#     Error: Custom: Invalid blockhash
+	# in which case the solution seems to be to wait and retry.
 	solana program deploy $(PROGRAM_BIN) --url $(NET)
 
 .PHONY: airdrop
