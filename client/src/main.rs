@@ -60,18 +60,20 @@ fn account_create(
 fn play_ping_pong(
     client: &solana_client::rpc_client::RpcClient,
     program_id: solana_sdk::pubkey::Pubkey,
+    buf_id: solana_sdk::pubkey::Pubkey,
     payer_keys: &solana_sdk::signer::keypair::Keypair,
-    buf_keys: &solana_sdk::signer::keypair::Keypair,
 ) {
-    let signers = [payer_keys, buf_keys];
+    let signers = [payer_keys];
     let payer_id = payer_keys.pubkey();
-    let buf_id = buf_keys.pubkey();
     let mut req = protocol::client::request_init();
     loop {
         let ix = solana_sdk::instruction::Instruction::new_with_borsh(
             program_id,
             &req,
-            vec![AccountMeta::new(buf_id, true)],
+            {
+                let is_signer = false;
+                vec![AccountMeta::new(buf_id, is_signer)]
+            }
         );
         let tx = solana_sdk::transaction::Transaction::new(
             &signers,
@@ -135,5 +137,5 @@ fn main() {
         eprintln!("buffer account done");
     }
 
-    play_ping_pong(&client, program_id, &payer_keys, &buf_keys);
+    play_ping_pong(&client, program_id, buf_keys.pubkey(), &payer_keys);
 }
