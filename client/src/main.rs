@@ -21,6 +21,23 @@ fn airdrop(
     client.request_airdrop(&dst, amount).unwrap();
     eprintln!(".");
 
+    // XXX This confirmation retry loop is a bit suspect, but I wasn't able to
+    //     make confirmation work with
+    //
+    //         confirm_transaction_with_spinner
+    //
+    //     which executed successfully, but did not actually mean that the
+    //     account balance was already updated:
+    //
+    //     client
+    //         .confirm_transaction_with_spinner(
+    //             // TODO What's a spinner?
+    //             &client.request_airdrop(&dst, amount).unwrap(),
+    //             &client.get_latest_blockhash().unwrap(),
+    //             solana_sdk::commitment_config::CommitmentConfig::confirmed(),
+    //         )
+    //         .unwrap();
+    //
     eprint!("airdrop confirming ");
     let mut backoff = 1;
     while client.get_balance(&dst).unwrap() < balance_target {
