@@ -63,30 +63,30 @@ fn play_ping_pong(
     buf_id: solana_sdk::pubkey::Pubkey,
     payer_keys: &solana_sdk::signer::keypair::Keypair,
 ) {
-    let signers = [payer_keys];
-    let payer_id = payer_keys.pubkey();
-    let mut req = protocol::client::request_init();
-    loop {
+    let tx = |req: &protocol::client::Request| {
         let ix = solana_sdk::instruction::Instruction::new_with_borsh(
             program_id,
-            &req,
+            req,
             {
-                let is_signer = false;
+                let is_signer = false; // Buffer doesn't need to sign the tx.
                 vec![AccountMeta::new(buf_id, is_signer)]
-            }
+            },
         );
-        let tx = solana_sdk::transaction::Transaction::new(
+        let signers = [payer_keys];
+        let payer_id = payer_keys.pubkey();
+        solana_sdk::transaction::Transaction::new(
             &signers,
             solana_sdk::message::Message::new(&[ix], Some(&payer_id)),
             client.get_latest_blockhash().unwrap(),
-        );
+        )
+    };
+    let mut req = protocol::client::request_init();
+    loop {
         eprint!("{:?} >", req);
-        let _ = client.send_and_confirm_transaction(&tx).unwrap();
-        eprint!(" ");
-
+        let _ = client.send_and_confirm_transaction(&tx(&req)).unwrap();
         let buf = client.get_account(&buf_id).unwrap().data;
         let resp = protocol::program::Response::try_from_slice(&buf).unwrap();
-        eprintln!("< {:?}", resp);
+        eprintln!(" < {:?}", resp);
         req = protocol::client::request_next(&resp);
     }
 }
