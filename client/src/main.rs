@@ -14,11 +14,11 @@ fn airdrop(
     dst: &solana_sdk::pubkey::Pubkey,
     amount: u64,
 ) {
-    let balance_init = client.get_balance(&dst).unwrap();
+    let balance_init = client.get_balance(dst).unwrap();
     let balance_target = balance_init + amount;
 
     eprint!("airdrop requesting");
-    client.request_airdrop(&dst, amount).unwrap();
+    client.request_airdrop(dst, amount).unwrap();
     eprintln!(".");
 
     // XXX This confirmation retry loop is a bit suspect, but I wasn't able to
@@ -40,7 +40,7 @@ fn airdrop(
     //
     eprint!("airdrop confirming ");
     let mut backoff = 1;
-    while client.get_balance(&dst).unwrap() < balance_target {
+    while client.get_balance(dst).unwrap() < balance_target {
         eprint!(".");
         std::thread::sleep(std::time::Duration::from_secs(backoff));
         backoff *= 2;
